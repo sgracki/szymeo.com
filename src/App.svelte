@@ -1,8 +1,109 @@
-<script>
+<script lang="ts">
+    import '../public/global.css';
     import { onMount } from 'svelte';
 
     let canvas;
     let dpi = window.devicePixelRatio;
+
+    type MazeCell = Array<number>;
+    type MazeRow = Array<MazeCell>;
+    type MazeSchema = Array<MazeRow>;
+
+    enum MazeExit {
+        TOP,
+        RIGHT,
+        BOT,
+        LEFT
+    }
+
+    interface MazePuzzel {
+        exits: Set<MazeExit>;
+        schema: MazeSchema
+    }
+
+    const mazeSchema1: MazeSchema = [
+        [[1,0,0,1],[1,0,1,0],[1,0,1,0],[1,0,1,0],[1,1,0,0]],
+        [[0,1,1,1],[1,0,0,1],[1,0,1,0],[1,1,0,0],[0,1,0,1]],
+        [[1,0,0,1],[0,1,0,0],[1,0,1,0],[0,1,0,0],[0,1,0,1]],
+        [[0,1,0,1],[0,0,1,1],[1,1,0,0],[0,1,0,1],[0,1,0,1]],
+        [[0,0,1,1],[1,1,1,0],[0,1,0,1],[0,0,1,1],[0,0,1,0]]
+    ];
+
+    const mazeSchema2: MazeSchema = [
+        [[1,0,0,1],[1,0,1,0],[1,1,1,0],[1,0,0,1],[1,1,1,0]],
+        [[0,0,0,1],[1,0,1,0],[1,1,0,0],[0,0,0,1],[1,0,0,0]],
+        [[0,1,0,1],[1,1,0,1],[0,0,1,1],[0,1,0,0],[0,1,0,1]],
+        [[0,0,0,1],[0,1,1,0],[1,0,0,1],[0,1,1,0],[0,1,0,0]],
+        [[0,0,1,0],[1,1,1,0],[0,1,0,1],[1,0,1,1],[0,1,1,0]]
+    ];
+
+    const mazeSchema3: MazeSchema = [
+        [[1,0,0,1],[1,0,1,0],[1,0,1,0],[1,0,1,0],[1,1,0,0]],
+        [[0,1,1,0],[1,0,0,1],[1,0,1,0],[1,1,0,0],[0,1,0,1]],
+        [[1,0,0,1],[0,1,0,0],[1,0,1,0],[0,1,0,0],[0,1,0,1]],
+        [[0,1,0,1],[0,0,1,1],[1,1,0,0],[0,1,0,1],[0,1,0,1]],
+        [[0,0,0,1],[1,1,1,0],[0,1,0,1],[0,0,1,1],[0,1,1,0]]
+    ];
+
+    const mazeSchema4: MazeSchema = [
+        [[1,0,0,1],[1,0,1,0],[0,1,1,0],[1,0,0,1],[1,1,1,0]],
+        [[0,0,0,1],[1,0,1,0],[1,1,0,0],[0,0,0,1],[1,1,0,0]],
+        [[0,1,0,1],[1,1,0,1],[0,0,1,1],[0,1,0,0],[0,1,0,1]],
+        [[0,0,0,1],[0,1,1,0],[1,0,0,1],[0,1,1,0],[0,1,0,0]],
+        [[0,0,1,1],[1,1,1,0],[0,1,0,1],[1,0,0,1],[0,1,1,0]]
+    ];
+
+    const mazeSchema5: MazeSchema = [
+        [[1,0,0,1],[1,0,1,0],[1,0,1,0],[1,0,1,0],[1,1,0,0]],
+        [[0,1,1,1],[1,0,0,1],[1,0,1,0],[1,1,0,0],[0,1,0,1]],
+        [[1,0,0,1],[0,1,0,0],[1,0,1,0],[0,1,0,0],[0,1,0,1]],
+        [[0,1,0,1],[0,0,1,1],[1,1,0,0],[0,1,0,1],[0,1,0,1]],
+        [[0,0,1,1],[1,1,1,0],[0,1,0,1],[0,0,1,1],[0,0,1,0]]
+    ];
+
+    const mazeSchema6: MazeSchema = [
+        [[0,1,1,1],[1,0,1,0],[0,0,1,0],[1,0,0,0],[1,1,1,0]],
+        [[0,0,0,1],[1,0,1,0],[1,1,0,0],[0,0,0,1],[1,1,0,0]],
+        [[0,1,0,1],[1,1,0,1],[0,0,1,1],[0,1,0,0],[0,1,0,1]],
+        [[0,0,0,1],[0,1,1,0],[1,0,0,1],[0,1,1,0],[0,1,0,0]],
+        [[0,0,0,1],[1,1,1,0],[0,1,0,1],[1,0,1,1],[0,1,1,0]]
+    ];
+
+    const mazeSchema7: MazeSchema = [
+        [[1,0,0,1],[1,0,1,0],[1,0,1,0],[0,0,1,0],[1,1,0,0]],
+        [[0,1,1,1],[1,0,0,1],[1,0,1,0],[1,1,0,0],[0,1,0,1]],
+        [[1,0,0,1],[0,1,0,0],[1,0,1,0],[0,1,0,0],[0,1,0,1]],
+        [[0,1,0,1],[0,0,1,1],[1,1,0,0],[0,1,0,1],[0,1,0,1]],
+        [[0,0,1,1],[1,1,1,0],[0,1,1,1],[0,0,1,1],[0,0,1,0]]
+    ];
+
+    const mazeSchema8: MazeSchema = [
+        [[1,0,0,1],[1,0,1,0],[0,1,1,0],[1,0,0,1],[1,1,1,0]],
+        [[0,0,0,1],[1,0,1,0],[1,1,0,0],[0,0,0,1],[1,1,0,0]],
+        [[0,1,0,1],[1,1,0,1],[0,0,1,1],[0,1,0,0],[0,1,0,1]],
+        [[0,0,0,1],[0,1,1,0],[1,0,0,1],[0,1,1,0],[0,1,0,0]],
+        [[0,0,1,1],[1,1,1,0],[0,1,1,1],[1,0,1,1],[0,1,1,0]]
+    ];
+
+    const mazeSchema9: MazeSchema = [
+        [[0,0,0,1],[1,0,1,0],[1,0,1,0],[1,0,1,0],[1,1,0,0]],
+        [[0,1,1,1],[1,0,0,1],[1,0,1,0],[1,1,0,0],[0,1,0,1]],
+        [[1,0,0,1],[0,1,0,0],[1,0,1,0],[0,1,0,0],[0,1,0,1]],
+        [[0,1,0,1],[0,0,1,1],[1,1,0,0],[0,1,0,1],[0,1,0,1]],
+        [[0,0,1,1],[1,1,1,0],[0,1,1,1],[0,0,1,1],[0,1,1,0]]
+    ];
+
+    function schemasToRow(...schemas: MazeSchema[]): MazeSchema {
+        return schemas.reduce((memo: MazeSchema, item: MazeSchema) => {
+            return [
+                [...memo[0], ...item[0]],
+                [...memo[1], ...item[1]],
+                [...memo[2], ...item[2]],
+                [...memo[3], ...item[3]],
+                [...memo[4], ...item[4]],
+            ]
+        }, [[],[],[],[],[]]);
+    }
 
     onMount(() => {
         const ctx = canvas.getContext('2d');
@@ -10,8 +111,23 @@
 
         fix_dpi();
 
-        // drawOuterBorder();
-        drawMaze();
+        drawMaze([
+            ...schemasToRow(
+                mazeSchema1,
+                mazeSchema2,
+                mazeSchema3,
+            ),
+            ...schemasToRow(
+                mazeSchema4,
+                mazeSchema5,
+                mazeSchema6,
+            ),
+            ...schemasToRow(
+                mazeSchema7,
+                mazeSchema8,
+                mazeSchema9,
+            ),
+        ]);
 
         function loop(t) {
             frame = requestAnimationFrame(loop);
@@ -45,33 +161,21 @@
 
     // TODO make parts of labirynth and connect them together like puzzle
 
-    function drawMaze() {
+    function drawMaze(schema: MazeSchema) {
         const cellSize = 50;
         const ctx = canvas.getContext('2d');
         ctx.lineWidth = 2;
-        for (let i = 0; i < 10; i++) {
-            for (let j = 0; j < 10; j++) {
-                // ctx.strokeRect(i * 50, j * 50, 100, 100);
-                const [x1, y1] = [i * cellSize, j * cellSize];
+
+        for (let i = 0; i < schema.length; i++) { // schema
+            for (let j = 0; j < schema[i].length; j++) { // row
+                const [top, right, bot, left] = schema[i][j];
+                const [x1, y1] = [j * cellSize, i * cellSize];
                 const [x2, y2] = [x1 + cellSize, y1 + cellSize];
 
-                const direction = 'right';
-
-                switch(direction) {
-                    case 'left':
-                        drawLine(x1, y2, x2, y2);
-                        break;
-                    case 'right':
-                        drawLine(x1, y2, x2, y2);
-                        break;
-                    case 'top':
-                        drawLine(x1, y2, x2, y2);
-                        break;
-                    case 'bot':
-                        drawLine(x1, y2, x2, y2);
-                        break;
-
-                }
+                top && drawLine(x1, y1, x2, y1);
+                right && drawLine(x2, y1, x2, y2);
+                bot && drawLine(x1, y2, x2, y2);
+                left && drawLine(x1, y1, x1, y2);
             }
         }
     }
@@ -84,26 +188,26 @@
         const ctx = canvas.getContext('2d');
 
         // set line stroke and line width
-        ctx.strokeStyle = Math.round(Math.random() * 1000) % 2 === 0 ? 'red' : 'blue';
-        ctx.lineWidth = 5;
+        ctx.strokeStyle = 'black';
+        ctx.lineCap = 'round';
+        ctx.lineWidth = 2;
 
         // draw a red line
         ctx.beginPath();
-        ctx.moveTo(x1, y1);
-        ctx.lineTo(x2, y2);
+        ctx.moveTo(x1 + 10, y1 + 10);
+        ctx.lineTo(x2 + 10, y2 + 10);
         ctx.stroke();
     }
 </script>
 
 <canvas
         bind:this={canvas}
-        width={32}
-        height={32}
 ></canvas>
 
 <style>
     canvas {
         width: 100%;
         height: 100%;
+        border: 5px solid #F45555;
     }
 </style>
