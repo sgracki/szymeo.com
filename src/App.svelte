@@ -1,8 +1,9 @@
 <script lang="ts">
     import '../public/global.css';
     import { onMount } from 'svelte';
-    import { captureKeydown, KeyboardCapture } from './captureKeydown';
+    import { KeyboardCapture } from './captureKeydown';
     import { Drawer } from './Drawer';
+    import { fix_dpi } from './fix_dpi';
     import {
         mazeSchema1,
         mazeSchema2,
@@ -14,16 +15,14 @@
     } from './maze-schemas';
     import type { MazeSchema } from './maze-schemas';
 
-    const cellSize = 30;
+    const cellSize = 28;
     const mazeRows = 15;
     const playerSize = 9;
     const moveSpeed = 2;
     const wallWidth = 2;
     const mazeSize = cellSize * mazeRows;
     let LAST_FRAME_TIME = 0;
-    let screenSize: Size = { width: null, height: null };
     let canvas: HTMLCanvasElement, drawer: Drawer, position: Point = { x: mazeSize/2, y: mazeSize/2 }, ctx2d;
-    let dpi = window.devicePixelRatio;
     let fps = 0;
     let keyboardCapture: KeyboardCapture;
     const mazeScheme: MazeSchema = [
@@ -44,35 +43,23 @@
         ),
     ];
 
-    function schemasToRow(...schemas: MazeSchema[]): MazeSchema {
-        return schemas.reduce((memo: MazeSchema, item: MazeSchema) => {
-            return [
-                [...memo[0], ...item[0]],
-                [...memo[1], ...item[1]],
-                [...memo[2], ...item[2]],
-                [...memo[3], ...item[3]],
-                [...memo[4], ...item[4]],
-            ]
-        }, [[],[],[],[],[]]);
-    }
-
     onMount(() => {
         ctx2d = canvas.getContext('2d', { alpha: false });
         let frame = requestAnimationFrame(loop);
         drawer = new Drawer(canvas);
         keyboardCapture = new KeyboardCapture();
 
-        fix_dpi();
-
         function loop(TIME: number) {
+            const screenSize: Size = fix_dpi(canvas, mazeSize);
             ctx2d.clearRect(0, 0, screenSize.width, screenSize.height);
+            ctx2d.fillStyle = 'white';
+            ctx2d.fillRect(0, 0, canvas.width, canvas.height);
 
             showFPS();
             fps = 1 / ((performance.now() - LAST_FRAME_TIME) / 1000);
             LAST_FRAME_TIME = TIME;
 
-            drawMaze(mazeScheme);
-            drawPlayer(position.x, position.y);
+            drawer.maze(mazeScheme, cellSize, wallWidth);
 
             const [keyW, keyA, keyS, keyD] = keyboardCapture.pressedKeys;
             const [topC, rightC, botC, leftC] = detectCollision();
@@ -90,7 +77,7 @@
                 setPosition({ x: position.x + moveSpeed });
             }
 
-            drawPlayer(position.x, position.y);
+            drawer.player(position.x, position.y, playerSize);
 
             frame = requestAnimationFrame(loop);
         }
@@ -117,27 +104,6 @@
         position = { ...position, ...point };
     }
 
-    function fix_dpi() {
-        //create a style object that returns width and height
-        let style = {
-            height() {
-                return +getComputedStyle(canvas).getPropertyValue('height').slice(0,-2);
-            },
-            width() {
-                return +getComputedStyle(canvas).getPropertyValue('width').slice(0,-2);
-            }
-        }
-        //set the correct attributes for a crystal clear image!
-        screenSize = {
-            width: style.width() * dpi,
-            height: style.height() * dpi,
-        };
-        canvas.setAttribute('width', String(style.width() * dpi));
-        canvas.setAttribute('height', String(style.height() * dpi));
-    }
-
-    // TODO make parts of labirynth and connect them together like puzzle
-
     function showFPS() {
         ctx2d.fillStyle = "Black";
         ctx2d.font = "normal 12pt Arial";
@@ -145,39 +111,19 @@
         ctx2d.fillText(Math.round(fps) + " fps", 10, mazeSize + 25);
     }
 
-    function drawMaze(schema: MazeSchema) {
-        ctx2d.lineWidth = wallWidth;
-
-        for (let i = 0; i < schema.length; i++) { // schema
-            for (let j = 0; j < schema[i].length; j++) { // row
-                const [top, right, bot, left] = schema[i][j];
-                const [x1, y1] = [j * cellSize, i * cellSize];
-                const [x2, y2] = [x1 + cellSize, y1 + cellSize];
-
-                top && drawer.line(x1, y1, x2, y1);
-                right && drawer.line(x2, y1, x2, y2);
-                bot && drawer.line(x1, y2, x2, y2);
-                left && drawer.line(x1, y1, x1, y2);
-            }
-        }
+    function schemasToRow(...schemas: MazeSchema[]): MazeSchema {
+        return schemas.reduce((memo: MazeSchema, item: MazeSchema) => {
+            return [
+                [...memo[0], ...item[0]],
+                [...memo[1], ...item[1]],
+                [...memo[2], ...item[2]],
+                [...memo[3], ...item[3]],
+                [...memo[4], ...item[4]],
+            ]
+        }, [[],[],[],[],[]]);
     }
 
-    function drawPlayer(x: number, y: number) {
-        ctx2d.beginPath();
-        ctx2d.fillStyle = '#F45555';
-        ctx2d.arc(x, y, playerSize, 0, 360, false);
-        ctx2d.fill();
-    }
 </script>
 
-<canvas
-        bind:this={canvas}
-></canvas>
+<canvas bind:this={canvas}></canvas>
 
-<style>
-    canvas {
-        width: 100%;
-        height: 100%;
-        border: 5px solid #F45555;
-    }
-</style>
