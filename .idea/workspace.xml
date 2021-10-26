@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="a53acfc6-1d46-42c1-8830-047a396ee8a1" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/Drawer.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/maze-schemas.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/captureKeydown.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/public/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.svelte" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/maze-schemas.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/maze-schemas.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,6 +14,31 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitToolBoxStore">
+    <option name="recentBranches">
+      <RecentBranches>
+        <option name="branchesForRepo">
+          <list>
+            <RecentBranchesForRepo>
+              <option name="branches">
+                <list>
+                  <RecentBranch>
+                    <option name="branchName" value="main" />
+                    <option name="lastUsedInstant" value="1635203857" />
+                  </RecentBranch>
+                  <RecentBranch>
+                    <option name="branchName" value="master" />
+                    <option name="lastUsedInstant" value="1635203856" />
+                  </RecentBranch>
+                </list>
+              </option>
+              <option name="repositoryRootUrl" value="file://$PROJECT_DIR$" />
+            </RecentBranchesForRepo>
+          </list>
+        </option>
+      </RecentBranches>
+    </option>
   </component>
   <component name="ProjectId" id="1zjPV7QGYLvep2qhiIeDVQaUtlJ" />
   <component name="ProjectLevelVcsManager">
@@ -58,7 +82,7 @@
       <workItem from="1635177804524" duration="104000" />
       <workItem from="1635177937933" duration="2000" />
       <workItem from="1635177973868" duration="36000" />
-      <workItem from="1635178062544" duration="14787000" />
+      <workItem from="1635178062544" duration="18138000" />
     </task>
     <servers />
   </component>

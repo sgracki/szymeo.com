@@ -1,6 +1,7 @@
 <script lang="ts">
     import '../public/global.css';
     import { onMount } from 'svelte';
+    import { captureKeydown, KeyboardCapture } from './captureKeydown';
     import { Drawer } from './Drawer';
     import {
         mazeSchema1,
@@ -17,13 +18,14 @@
     const mazeRows = 15;
     const playerSize = 9;
     const moveSpeed = 2;
+    const wallWidth = 2;
     const mazeSize = cellSize * mazeRows;
     let LAST_FRAME_TIME = 0;
     let screenSize: Size = { width: null, height: null };
     let canvas: HTMLCanvasElement, drawer: Drawer, position: Point = { x: mazeSize/2, y: mazeSize/2 }, ctx2d;
-    let keyW, keyS, keyA, keyD;
     let dpi = window.devicePixelRatio;
     let fps = 0;
+    let keyboardCapture: KeyboardCapture;
     const mazeScheme: MazeSchema = [
         ...schemasToRow(
             mazeSchema1,
@@ -58,6 +60,7 @@
         ctx2d = canvas.getContext('2d', { alpha: false });
         let frame = requestAnimationFrame(loop);
         drawer = new Drawer(canvas);
+        keyboardCapture = new KeyboardCapture();
 
         fix_dpi();
 
@@ -71,8 +74,7 @@
             drawMaze(mazeScheme);
             drawPlayer(position.x, position.y);
 
-            captureKeydown();
-
+            const [keyW, keyA, keyS, keyD] = keyboardCapture.pressedKeys;
             const [topC, rightC, botC, leftC] = detectCollision();
 
             if (keyW && !topC) {
@@ -104,10 +106,10 @@
         const [topWall, rightWall, bottomWall, leftWall] = mazeScheme[yIdx][xIdx];
         const cellXY: Point = { x: xIdx * cellSize, y: yIdx * cellSize };
         return [
-            (topWall !== 0) && position.y < cellXY.y,
-            (rightWall !== 0) && position.x + playerSize > cellXY.x + cellSize,
-            (bottomWall !== 0) && position.y + playerSize > cellXY.y + cellSize,
-            (leftWall !== 0) && position.x < cellXY.x
+            (topWall !== 0) && position.y - playerSize < cellXY.y + wallWidth,
+            (rightWall !== 0) && position.x + playerSize > cellXY.x + cellSize - wallWidth,
+            (bottomWall !== 0) && position.y + playerSize > cellXY.y + cellSize - wallWidth,
+            (leftWall !== 0) && position.x - playerSize < cellXY.x + wallWidth
         ];
     }
 
@@ -138,13 +140,13 @@
 
     function showFPS() {
         ctx2d.fillStyle = "Black";
-        ctx2d.font      = "normal 12pt Arial";
+        ctx2d.font = "normal 12pt Arial";
 
         ctx2d.fillText(Math.round(fps) + " fps", 10, mazeSize + 25);
     }
 
     function drawMaze(schema: MazeSchema) {
-        ctx2d.lineWidth = 2;
+        ctx2d.lineWidth = wallWidth;
 
         for (let i = 0; i < schema.length; i++) { // schema
             for (let j = 0; j < schema[i].length; j++) { // row
@@ -165,48 +167,6 @@
         ctx2d.fillStyle = '#F45555';
         ctx2d.arc(x, y, playerSize, 0, 360, false);
         ctx2d.fill();
-    }
-
-    function captureKeydown(): void {
-        window.addEventListener("keydown", onKeyDown, false);
-        window.addEventListener("keyup", onKeyUp, false);
-
-        function onKeyDown(event) {
-            const keyCode = event.keyCode;
-            switch (keyCode) {
-                case 68: //d
-                    keyD = true;
-                    break;
-                case 83: //s
-                    keyS = true;
-                    break;
-                case 65: //a
-                    keyA = true;
-                    break;
-                case 87: //w
-                    keyW = true;
-                    break;
-            }
-        }
-
-        function onKeyUp(event) {
-            var keyCode = event.keyCode;
-
-            switch (keyCode) {
-                case 68: //d
-                    keyD = false;
-                    break;
-                case 83: //s
-                    keyS = false;
-                    break;
-                case 65: //a
-                    keyA = false;
-                    break;
-                case 87: //w
-                    keyW = false;
-                    break;
-            }
-        }
     }
 </script>
 
