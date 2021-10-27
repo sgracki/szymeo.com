@@ -21,10 +21,16 @@
     const moveSpeed = 2;
     const wallWidth = 2;
     const mazeSize = cellSize * mazeRows;
-    let LAST_FRAME_TIME = 0;
-    let canvas: HTMLCanvasElement, drawer: Drawer, position: Point = { x: mazeSize/2, y: mazeSize/2 }, ctx2d;
-    let fps = 0;
-    let keyboardCapture: KeyboardCapture;
+    let gameCanvas: HTMLCanvasElement,
+        backgroundCanvas: HTMLCanvasElement,
+        gameDrawer: Drawer,
+        bgDrawer: Drawer,
+        position: Point = { x: mazeSize/2, y: mazeSize/2 },
+        gameCtx2d,
+        backgroundCtx2d,
+        fps = 0,
+        LAST_FRAME_TIME = 0,
+        keyboardCapture: KeyboardCapture;
     const mazeScheme: MazeSchema = [
         ...schemasToRow(
             mazeSchema1,
@@ -44,22 +50,28 @@
     ];
 
     onMount(() => {
-        ctx2d = canvas.getContext('2d', { alpha: false });
+        gameCtx2d = gameCanvas.getContext('2d', { alpha: false });
+        backgroundCtx2d = gameCanvas.getContext('2d', { alpha: false });
         let frame = requestAnimationFrame(loop);
-        drawer = new Drawer(canvas);
+        gameDrawer = new Drawer(gameCanvas);
+        bgDrawer = new Drawer(backgroundCanvas);
         keyboardCapture = new KeyboardCapture();
 
+        bgDrawer.maze(mazeScheme, cellSize, wallWidth);
+
+        fix_dpi(backgroundCanvas, mazeSize);
+        const screenSize: Size = fix_dpi(gameCanvas, mazeSize);
+
+        bgDrawer.maze(mazeScheme, cellSize, wallWidth);
+
         function loop(TIME: number) {
-            const screenSize: Size = fix_dpi(canvas, mazeSize);
-            ctx2d.clearRect(0, 0, screenSize.width, screenSize.height);
-            ctx2d.fillStyle = 'white';
-            ctx2d.fillRect(0, 0, canvas.width, canvas.height);
+            gameCtx2d.clearRect(0, 0, screenSize.width, screenSize.height);
+            gameCtx2d.fillStyle = 'white';
+            gameCtx2d.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
 
             showFPS();
             fps = 1 / ((performance.now() - LAST_FRAME_TIME) / 1000);
             LAST_FRAME_TIME = TIME;
-
-            drawer.maze(mazeScheme, cellSize, wallWidth);
 
             const [keyW, keyA, keyS, keyD] = keyboardCapture.pressedKeys;
             const [topC, rightC, botC, leftC] = detectCollision();
@@ -77,7 +89,7 @@
                 setPosition({ x: position.x + moveSpeed });
             }
 
-            drawer.player(position.x, position.y, playerSize);
+            gameDrawer.player(position.x, position.y, playerSize);
 
             frame = requestAnimationFrame(loop);
         }
@@ -105,10 +117,10 @@
     }
 
     function showFPS() {
-        ctx2d.fillStyle = "Black";
-        ctx2d.font = "normal 12pt Arial";
+        gameCtx2d.fillStyle = "Black";
+        gameCtx2d.font = "normal 12pt Arial";
 
-        ctx2d.fillText(Math.round(fps) + " fps", 10, mazeSize + 25);
+        gameCtx2d.fillText(Math.round(fps) + " fps", 10, mazeSize + 25);
     }
 
     function schemasToRow(...schemas: MazeSchema[]): MazeSchema {
@@ -125,5 +137,15 @@
 
 </script>
 
-<canvas bind:this={canvas}></canvas>
+<canvas bind:this={gameCanvas}></canvas>
+<canvas bind:this={backgroundCanvas}></canvas>
+
+<style>
+    canvas {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+</style>
 
