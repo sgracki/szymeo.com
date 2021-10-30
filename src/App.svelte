@@ -16,6 +16,7 @@
     import { fix_dpi } from './fix_dpi';
     import { mainMazeSchema } from './schemas/maze-schemas';
     import type { Point } from './schemas/point';
+    import { Size } from './schemas/size';
     import { wayPoints } from './schemas/waypoints-schemas';
 
     let gameCanvas: HTMLCanvasElement,
@@ -34,10 +35,12 @@
 
         keyboardCapture = new KeyboardCapture();
 
-        fix_dpi(gameCanvas, MAZE_SIZE);
+        const screenSize: Size = fix_dpi(gameCanvas, MAZE_SIZE);
 
         function loop(TIME: number) {
-            clearCanvas(gameCanvas, 'white');
+            gameCtx2d.clearRect(0, 0, screenSize.width, screenSize.height);
+            gameCtx2d.fillStyle = 'white';
+            gameCtx2d.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
 
             const [keyW, keyA, keyS, keyD, SPACE] = keyboardCapture.pressedKeys;
             const [wallsC, collidingWayPoint] = detectCollision(position);
@@ -65,9 +68,9 @@
                 collidingWayPoint.callback();
             }
 
-            gameDrawer.drawPoint(position.x, position.y, PLAYER_SIZE, '#F45555');
             gameDrawer.maze(mainMazeSchema, CELL_SIZE, WALL_WIDTH);
             gameDrawer.drawWaypoints(wayPoints, collidingWayPoint);
+            gameDrawer.drawPoint(position.x, position.y, PLAYER_SIZE, '#F45555');
 
             frame = requestAnimationFrame(loop);
         }
@@ -91,13 +94,6 @@
         if (velocity - VELOCITY_MULTIPLIER > 0) {
             velocity = velocity - VELOCITY_MULTIPLIER;
         }
-    }
-
-    function clearCanvas(canvas: HTMLCanvasElement, fill: string): void {
-        const ctx = canvas.getContext('2d', { alpha: false });
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = fill;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
 </script>
