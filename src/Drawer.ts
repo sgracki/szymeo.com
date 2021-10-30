@@ -1,7 +1,10 @@
-import type { MazeSchema, Point } from './maze-schemas';
+import { CELL_SIZE, PLAYER_SIZE, WALL_WIDTH } from './constants';
+import type { MazeSchema } from './typings/maze-schemas';
+import type { Point } from './typings/point';
+import type { WayPointsSchema } from './typings/waypoints-schemas';
 
 export class Drawer {
-    lanes: Point[][] = [];
+    lines: Point[][] = [];
 
     constructor(private readonly _canvas: HTMLCanvasElement) {
     }
@@ -23,11 +26,20 @@ export class Drawer {
         }
     }
 
-    player(x: number, y: number, playerSize: number): void {
+    drawWaypoints(schema: WayPointsSchema): void {
+        for (let i = 0; i < schema.length; i++) {
+            const [x, y] = schema[i].coords;
+            const [p1, p2] = [x * CELL_SIZE, y * CELL_SIZE];
+            this.drawPoint(p1 - CELL_SIZE / 2, p2 - CELL_SIZE / 2, PLAYER_SIZE, '#38E8C0');
+        }
+    }
+
+    drawPoint(x: number, y: number, radius: number, fill: string): void {
+        console.log('drawPoint', x, y, radius, fill);
         const ctx2d = this._get2dCtx();
         ctx2d.beginPath();
-        ctx2d.fillStyle = '#F45555';
-        ctx2d.arc(x, y, playerSize, 0, 360, false);
+        ctx2d.fillStyle = fill;
+        ctx2d.arc(x, y, radius, 0, 360, false);
         ctx2d.fill();
     }
 
@@ -41,14 +53,14 @@ export class Drawer {
         // set line stroke and line width
         ctx.strokeStyle = 'black';
         ctx.lineCap = 'round';
-        ctx.lineWidth = 2;
+        ctx.lineWidth = WALL_WIDTH;
 
         // draw a red line
         ctx.beginPath();
         ctx.moveTo(x1, y1);
         ctx.lineTo(x2, y2);
         ctx.stroke();
-        this.lanes.push([{ x: x1, y: y1 }, { x: x2, y: y2 }]);
+        this.lines.push([{ x: x1, y: y1 }, { x: x2, y: y2 }]);
     }
 
     private _get2dCtx(): CanvasRenderingContext2D {

@@ -2,68 +2,65 @@
     import { onMount } from 'svelte';
     import '../public/global.css';
     import { KeyboardCapture } from './captureKeydown';
+    import { CELL_SIZE, MAZE_SIZE, MOVE_SPEED, PLAYER_SIZE, WALL_WIDTH } from './constants';
     import { Drawer } from './Drawer';
     import { fix_dpi } from './fix_dpi';
-    import { mainMazeSchema, Point, Size } from './maze-schemas';
+    import { mainMazeSchema } from './typings/maze-schemas';
+    import type { Point } from './typings/point';
+    import { wayPoints } from './typings/waypoints-schemas';
 
-    const cellSize = 28;
-    const mazeRows = 15;
-    const playerSize = 9;
-    const moveSpeed = 2;
-    const wallWidth = 2;
-    const mazeSize = cellSize * mazeRows;
     let gameCanvas: HTMLCanvasElement,
+        wayPointsCanvas: HTMLCanvasElement,
         backgroundCanvas: HTMLCanvasElement,
         gameDrawer: Drawer,
+        wayPointsDrawer: Drawer,
         bgDrawer: Drawer,
-        position: Point = { x: mazeSize / 2, y: mazeSize / 2 },
-        gameCtx2d,
-        backgroundCtx2d,
-        fps = 0,
-        LAST_FRAME_TIME = 0,
+        position: Point = { x: MAZE_SIZE / 2, y: MAZE_SIZE / 2 },
+        gameCtx2d: CanvasRenderingContext2D,
+        wayPointsCtx2d: CanvasRenderingContext2D,
+        backgroundCtx2d: CanvasRenderingContext2D,
         keyboardCapture: KeyboardCapture;
 
     onMount(() => {
-        gameCtx2d = gameCanvas.getContext('2d', { alpha: false });
-        backgroundCtx2d = gameCanvas.getContext('2d', { alpha: false });
         let frame = requestAnimationFrame(loop);
+
+        gameCtx2d = gameCanvas.getContext('2d', { alpha: false });
+        wayPointsCtx2d = gameCanvas.getContext('2d', { alpha: false });
+        backgroundCtx2d = gameCanvas.getContext('2d', { alpha: false });
+
         gameDrawer = new Drawer(gameCanvas);
+        wayPointsDrawer = new Drawer(wayPointsCanvas);
         bgDrawer = new Drawer(backgroundCanvas);
+
         keyboardCapture = new KeyboardCapture();
 
-        bgDrawer.maze(mainMazeSchema, cellSize, wallWidth);
+        fix_dpi(backgroundCanvas, MAZE_SIZE);
+        fix_dpi(wayPointsCanvas, MAZE_SIZE);
+        fix_dpi(gameCanvas, MAZE_SIZE);
 
-        fix_dpi(backgroundCanvas, mazeSize);
-        const screenSize: Size = fix_dpi(gameCanvas, mazeSize);
-
-        bgDrawer.maze(mainMazeSchema, cellSize, wallWidth);
+        bgDrawer.maze(mainMazeSchema, CELL_SIZE, WALL_WIDTH);
+        wayPointsDrawer.drawWaypoints(wayPoints);
 
         function loop(TIME: number) {
-            gameCtx2d.clearRect(0, 0, screenSize.width, screenSize.height);
-            gameCtx2d.fillStyle = 'white';
-            gameCtx2d.fillRect(0, 0, gameCanvas.width, gameCanvas.height);
-
-            showFPS();
-            fps = 1 / ((performance.now() - LAST_FRAME_TIME) / 1000);
-            LAST_FRAME_TIME = TIME;
+            clearCanvas(gameCanvas);
 
             const [keyW, keyA, keyS, keyD] = keyboardCapture.pressedKeys;
             const [topC, rightC, botC, leftC] = detectCollision();
 
             if (keyW && !topC) {
-                setPosition({ y: position.y - moveSpeed });
+                setPosition({ y: position.y - MOVE_SPEED });
             }
             if (keyS && !botC) {
-                setPosition({ y: position.y + moveSpeed });
+                setPosition({ y: position.y + MOVE_SPEED });
             }
             if (keyA && !leftC) {
-                setPosition({ x: position.x - moveSpeed });
+                setPosition({ x: position.x - MOVE_SPEED });
             }
             if (keyD && !rightC) {
-                setPosition({ x: position.x + moveSpeed });
+                setPosition({ x: position.x + MOVE_SPEED });
             }
 
-            gameDrawer.player(position.x, position.y, playerSize);
+            gameDrawer.drawPoint(position.x, position.y, PLAYER_SIZE, '#F45555');
 
             frame = requestAnimationFrame(loop);
         }
@@ -74,15 +71,15 @@
     });
 
     function detectCollision(): boolean[] {
-        const [xIdx, yIdx]: number[] = [Math.ceil((position.x + playerSize / 2) / cellSize) - 1, Math.ceil((position.y + playerSize / 2) / cellSize) - 1];
+        const [xIdx, yIdx]: number[] = [Math.ceil((position.x + PLAYER_SIZE / 2) / CELL_SIZE) - 1, Math.ceil((position.y + PLAYER_SIZE / 2) / CELL_SIZE) - 1];
 
         const [topWall, rightWall, bottomWall, leftWall] = mainMazeSchema[yIdx][xIdx];
-        const cellXY: Point = { x: xIdx * cellSize, y: yIdx * cellSize };
+        const cellXY: Point = { x: xIdx * CELL_SIZE, y: yIdx * CELL_SIZE };
         return [
-            (topWall !== 0) && position.y - playerSize < cellXY.y + wallWidth,
-            (rightWall !== 0) && position.x + playerSize > cellXY.x + cellSize - wallWidth,
-            (bottomWall !== 0) && position.y + playerSize > cellXY.y + cellSize - wallWidth,
-            (leftWall !== 0) && position.x - playerSize < cellXY.x + wallWidth,
+            (topWall !== 0) && position.y - PLAYER_SIZE < cellXY.y + WALL_WIDTH,
+            (rightWall !== 0) && position.x + PLAYER_SIZE > cellXY.x + CELL_SIZE - WALL_WIDTH,
+            (bottomWall !== 0) && position.y + PLAYER_SIZE > cellXY.y + CELL_SIZE - WALL_WIDTH,
+            (leftWall !== 0) && position.x - PLAYER_SIZE < cellXY.x + WALL_WIDTH,
         ];
     }
 
@@ -90,16 +87,17 @@
         position = { ...position, ...point };
     }
 
-    function showFPS() {
-        gameCtx2d.fillStyle = "Black";
-        gameCtx2d.font = "normal 12pt Arial";
-
-        gameCtx2d.fillText(Math.round(fps) + " fps", 10, mazeSize + 25);
+    function clearCanvas(canvas: HTMLCanvasElement): void {
+        const ctx = canvas.getContext('2d', { alpha: false });
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'transparent';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
 </script>
 
 <canvas bind:this={gameCanvas}></canvas>
+<canvas bind:this={wayPointsCanvas}></canvas>
 <canvas bind:this={backgroundCanvas}></canvas>
 
 <style>

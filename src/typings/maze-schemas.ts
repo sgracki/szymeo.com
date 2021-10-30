@@ -1,4 +1,6 @@
-export type MazeCell = Array<number>;
+import type { FixedLengthArray } from './fixed-array';
+
+export type MazeCell = FixedLengthArray<[number, number, number, number]>;
 export type MazeRow = Array<MazeCell>;
 export type MazeSchema = Array<MazeRow>;
 
@@ -9,19 +11,9 @@ export enum MazeExit {
     LEFT
 }
 
-export interface MazePuzzel {
+export interface MazePuzzle {
     exits: Set<MazeExit>;
     schema: MazeSchema
-}
-
-export interface Point {
-    x: number;
-    y: number;
-}
-
-export interface Size {
-    width: number;
-    height: number;
 }
 
 export const mazeSchema1: MazeSchema = [
