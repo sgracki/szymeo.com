@@ -7,19 +7,15 @@ export interface WayPoint {
 
 export type WayPointsSchema = Array<WayPoint>;
 
-const point: WayPoint = {
-    coords: [1,1],
-    callback: () => null
-}
-
-const points: Array<WayPoint> = [point];
-
 export const wayPoints: WayPointsSchema = [
     {
         coords: [3,3],
         callback: () => console.log('waypoint reached [3,3]')
     }, {
-        coords: [5,10],
-        callback: () => console.log('waypoint reached [5,10]')
+        coords: [3,13],
+        callback: () => console.log('waypoint reached [3,13]')
+    }, {
+        coords: [12,4],
+        callback: () => console.log('waypoint reached [12,4]')
     }
 ];
