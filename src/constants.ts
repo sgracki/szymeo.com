@@ -4,4 +4,6 @@ export const PLAYER_SIZE = 7;
 export const MOVE_SPEED = 2;
 export const WALL_WIDTH = 2;
 export const WAYPOINT_SIZE = 5;
+export const VELOCITY_MULTIPLIER = 0.05;
+export const MAX_VELOCITY = 1.5;
 export const MAZE_SIZE = CELL_SIZE * MAZE_ROWS_COUNT;

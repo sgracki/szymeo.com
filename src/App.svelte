@@ -3,7 +3,15 @@
     import '../public/global.css';
     import { KeyboardCapture } from './captureKeydown';
     import { detectCollision } from './collision-detector';
-    import { CELL_SIZE, MAZE_SIZE, MOVE_SPEED, PLAYER_SIZE, WALL_WIDTH } from './constants';
+    import {
+        CELL_SIZE,
+        MAX_VELOCITY,
+        MAZE_SIZE,
+        MOVE_SPEED,
+        PLAYER_SIZE,
+        VELOCITY_MULTIPLIER,
+        WALL_WIDTH,
+    } from './constants';
     import { Drawer } from './Drawer';
     import { fix_dpi } from './fix_dpi';
     import { mainMazeSchema } from './typings/maze-schemas';
@@ -14,7 +22,8 @@
         gameDrawer: Drawer,
         position: Point = { x: MAZE_SIZE / 2, y: MAZE_SIZE / 2 },
         gameCtx2d: CanvasRenderingContext2D,
-        keyboardCapture: KeyboardCapture;
+        keyboardCapture: KeyboardCapture,
+        velocity = 0;
 
     onMount(() => {
         let frame = requestAnimationFrame(loop);
@@ -34,17 +43,23 @@
             const [wallsC, collidingWayPoint] = detectCollision(position);
             const [topC, rightC, botC, leftC] = wallsC;
 
+            if (keyW || keyA || keyS || keyD) {
+                increaseVelocity();
+            } else {
+                decreaseVelocity();
+            }
+
             if (keyW && !topC) {
-                setPosition({ y: position.y - MOVE_SPEED });
+                setPosition({ y: position.y - MOVE_SPEED * velocity });
             }
             if (keyS && !botC) {
-                setPosition({ y: position.y + MOVE_SPEED });
+                setPosition({ y: position.y + MOVE_SPEED * velocity });
             }
             if (keyA && !leftC) {
-                setPosition({ x: position.x - MOVE_SPEED });
+                setPosition({ x: position.x - MOVE_SPEED * velocity });
             }
             if (keyD && !rightC) {
-                setPosition({ x: position.x + MOVE_SPEED });
+                setPosition({ x: position.x + MOVE_SPEED * velocity });
             }
             if (SPACE && collidingWayPoint) {
                 collidingWayPoint.callback();
@@ -64,6 +79,18 @@
 
     function setPosition(point: Partial<Point>): void {
         position = { ...position, ...point };
+    }
+
+    function increaseVelocity(): void {
+        if (velocity + VELOCITY_MULTIPLIER < MAX_VELOCITY) {
+            velocity = velocity + VELOCITY_MULTIPLIER;
+        }
+    }
+
+    function decreaseVelocity(): void {
+        if (velocity - VELOCITY_MULTIPLIER > 0) {
+            velocity = velocity - VELOCITY_MULTIPLIER;
+        }
     }
 
     function clearCanvas(canvas: HTMLCanvasElement): void {
