@@ -10,14 +10,11 @@
     import { WayPoint, wayPoints } from './typings/waypoints-schemas';
 
     let gameCanvas: HTMLCanvasElement,
-        wayPointsCanvas: HTMLCanvasElement,
         backgroundCanvas: HTMLCanvasElement,
         gameDrawer: Drawer,
-        wayPointsDrawer: Drawer,
         bgDrawer: Drawer,
         position: Point = { x: MAZE_SIZE / 2, y: MAZE_SIZE / 2 },
         gameCtx2d: CanvasRenderingContext2D,
-        wayPointsCtx2d: CanvasRenderingContext2D,
         backgroundCtx2d: CanvasRenderingContext2D,
         keyboardCapture: KeyboardCapture;
 
@@ -25,21 +22,17 @@
         let frame = requestAnimationFrame(loop);
 
         gameCtx2d = gameCanvas.getContext('2d', { alpha: false });
-        wayPointsCtx2d = gameCanvas.getContext('2d', { alpha: false });
         backgroundCtx2d = gameCanvas.getContext('2d', { alpha: false });
 
         gameDrawer = new Drawer(gameCanvas);
-        wayPointsDrawer = new Drawer(wayPointsCanvas);
         bgDrawer = new Drawer(backgroundCanvas);
 
         keyboardCapture = new KeyboardCapture();
 
         fix_dpi(backgroundCanvas, MAZE_SIZE);
-        fix_dpi(wayPointsCanvas, MAZE_SIZE);
         fix_dpi(gameCanvas, MAZE_SIZE);
 
         bgDrawer.maze(mainMazeSchema, CELL_SIZE, WALL_WIDTH);
-        wayPointsDrawer.drawWaypoints(wayPoints);
 
         function loop(TIME: number) {
             clearCanvas(gameCanvas);
@@ -65,6 +58,7 @@
             }
 
             gameDrawer.drawPoint(position.x, position.y, PLAYER_SIZE, '#F45555');
+            gameDrawer.drawWaypoints(wayPoints);
 
             frame = requestAnimationFrame(loop);
         }
@@ -103,7 +97,7 @@
 </script>
 
 <canvas bind:this={gameCanvas}></canvas>
-<canvas bind:this={wayPointsCanvas}></canvas>
+<!--<canvas bind:this={wayPointsCanvas}></canvas>-->
 <canvas bind:this={backgroundCanvas}></canvas>
 
 <style>

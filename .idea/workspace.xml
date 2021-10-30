@@ -5,7 +5,6 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.svelte" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.svelte" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Drawer.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/Drawer.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/captureKeydown.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/captureKeydown.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -98,7 +97,7 @@
       <workItem from="1635178062544" duration="20087000" />
       <workItem from="1635260534677" duration="4120000" />
       <workItem from="1635366763734" duration="553000" />
-      <workItem from="1635544210453" duration="7075000" />
+      <workItem from="1635544210453" duration="7869000" />
     </task>
     <servers />
   </component>

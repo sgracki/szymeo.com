@@ -36,6 +36,7 @@ export class Drawer {
 
     drawPoint(x: number, y: number, radius: number, fill: string): void {
         const ctx2d = this._get2dCtx();
+        ctx2d.globalCompositeOperation='destination-over';
         ctx2d.beginPath();
         ctx2d.fillStyle = fill;
         ctx2d.arc(x, y, radius, 0, 360, false);
