@@ -7,7 +7,7 @@
     import { fix_dpi } from './fix_dpi';
     import { mainMazeSchema } from './typings/maze-schemas';
     import type { Point } from './typings/point';
-    import { wayPoints } from './typings/waypoints-schemas';
+    import { WayPoint, wayPoints } from './typings/waypoints-schemas';
 
     let gameCanvas: HTMLCanvasElement,
         wayPointsCanvas: HTMLCanvasElement,
@@ -44,8 +44,9 @@
         function loop(TIME: number) {
             clearCanvas(gameCanvas);
 
-            const [keyW, keyA, keyS, keyD] = keyboardCapture.pressedKeys;
-            const [topC, rightC, botC, leftC] = detectCollision();
+            const [keyW, keyA, keyS, keyD, SPACE] = keyboardCapture.pressedKeys;
+            const [wallsC, collidingWayPoint] = detectCollision();
+            const [topC, rightC, botC, leftC] = wallsC;
 
             if (keyW && !topC) {
                 setPosition({ y: position.y - MOVE_SPEED });
@@ -59,6 +60,9 @@
             if (keyD && !rightC) {
                 setPosition({ x: position.x + MOVE_SPEED });
             }
+            if (SPACE && collidingWayPoint) {
+                collidingWayPoint.callback();
+            }
 
             gameDrawer.drawPoint(position.x, position.y, PLAYER_SIZE, '#F45555');
 
@@ -70,17 +74,19 @@
         };
     });
 
-    function detectCollision(): boolean[] {
+    function detectCollision(): [boolean[], WayPoint|null] {
         const [xIdx, yIdx]: number[] = [Math.ceil((position.x + PLAYER_SIZE / 2) / CELL_SIZE) - 1, Math.ceil((position.y + PLAYER_SIZE / 2) / CELL_SIZE) - 1];
-
         const [topWall, rightWall, bottomWall, leftWall] = mainMazeSchema[yIdx][xIdx];
         const cellXY: Point = { x: xIdx * CELL_SIZE, y: yIdx * CELL_SIZE };
-        return [
+        const wallsCollision = [
             (topWall !== 0) && position.y - PLAYER_SIZE < cellXY.y + WALL_WIDTH,
             (rightWall !== 0) && position.x + PLAYER_SIZE > cellXY.x + CELL_SIZE - WALL_WIDTH,
             (bottomWall !== 0) && position.y + PLAYER_SIZE > cellXY.y + CELL_SIZE - WALL_WIDTH,
             (leftWall !== 0) && position.x - PLAYER_SIZE < cellXY.x + WALL_WIDTH,
         ];
+        const collidingWaypoint = wayPoints.find((wayPoint: WayPoint) => xIdx === wayPoint.coords[0] - 1 && yIdx === wayPoint.coords[1] - 1);
+
+        return [wallsCollision, collidingWaypoint];
     }
 
     function setPosition(point: Partial<Point>): void {

@@ -35,7 +35,6 @@ export class Drawer {
     }
 
     drawPoint(x: number, y: number, radius: number, fill: string): void {
-        console.log('drawPoint', x, y, radius, fill);
         const ctx2d = this._get2dCtx();
         ctx2d.beginPath();
         ctx2d.fillStyle = fill;

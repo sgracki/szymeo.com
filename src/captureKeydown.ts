@@ -5,6 +5,7 @@ export class KeyboardCapture {
         A: false,
         S: false,
         D: false,
+        SPACE: false
     }
 
     constructor() {
@@ -27,6 +28,9 @@ export class KeyboardCapture {
             case 87: //w
                 this._keys.W = true;
                 break;
+            case 32: //w
+                this._keys.SPACE = true;
+                break;
         }
     }
 
@@ -45,6 +49,9 @@ export class KeyboardCapture {
                 break;
             case 87: //w
                 this._keys.W = false;
+                break;
+            case 32: //w
+                this._keys.SPACE = false;
                 break;
         }
     }
