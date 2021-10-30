@@ -95,3 +95,33 @@ export const mazeSchema9: MazeSchema = [
     [[0,1,0,1],[0,0,1,1],[1,1,0,0],[0,1,0,1],[0,1,0,1]],
     [[0,0,1,0],[1,1,1,0],[0,1,1,1],[0,0,1,1],[0,1,1,0]]
 ];
+
+export const mainMazeSchema: MazeSchema = [
+    ...schemasToRow(
+        mazeSchema1,
+        mazeSchema2,
+        mazeSchema3,
+    ),
+    ...schemasToRow(
+        mazeSchema4,
+        mazeSchema5,
+        mazeSchema6,
+    ),
+    ...schemasToRow(
+        mazeSchema7,
+        mazeSchema8,
+        mazeSchema9,
+    ),
+];
+
+function schemasToRow(...schemas: MazeSchema[]): MazeSchema {
+    return schemas.reduce((memo: MazeSchema, item: MazeSchema) => {
+        return [
+            [...memo[0], ...item[0]],
+            [...memo[1], ...item[1]],
+            [...memo[2], ...item[2]],
+            [...memo[3], ...item[3]],
+            [...memo[4], ...item[4]],
+        ]
+    }, [[],[],[],[],[]]);
+}
