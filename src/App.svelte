@@ -37,7 +37,7 @@
         fix_dpi(gameCanvas, MAZE_SIZE);
 
         function loop(TIME: number) {
-            clearCanvas(gameCanvas);
+            clearCanvas(gameCanvas, 'white');
 
             const [keyW, keyA, keyS, keyD, SPACE] = keyboardCapture.pressedKeys;
             const [wallsC, collidingWayPoint] = detectCollision(position);
@@ -93,10 +93,10 @@
         }
     }
 
-    function clearCanvas(canvas: HTMLCanvasElement): void {
+    function clearCanvas(canvas: HTMLCanvasElement, fill: string): void {
         const ctx = canvas.getContext('2d', { alpha: false });
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = 'transparent';
+        ctx.fillStyle = fill;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 
