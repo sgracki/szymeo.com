@@ -14,16 +14,16 @@
     } from './constants';
     import { Drawer } from './Drawer';
     import { fix_dpi } from './fix_dpi';
-    import { mainMazeSchema } from './typings/maze-schemas';
-    import type { Point } from './typings/point';
-    import { wayPoints } from './typings/waypoints-schemas';
+    import { mainMazeSchema } from './schemas/maze-schemas';
+    import type { Point } from './schemas/point';
+    import { wayPoints } from './schemas/waypoints-schemas';
 
     let gameCanvas: HTMLCanvasElement,
         gameDrawer: Drawer,
         position: Point = { x: MAZE_SIZE / 2, y: MAZE_SIZE / 2 },
         gameCtx2d: CanvasRenderingContext2D,
         keyboardCapture: KeyboardCapture,
-        velocity = 0;
+        velocity = 1;
 
     onMount(() => {
         let frame = requestAnimationFrame(loop);

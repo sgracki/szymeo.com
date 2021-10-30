@@ -1,4 +1,4 @@
-import type { Size } from './typings/size';
+import type { Size } from './schemas/size';
 
 export function fix_dpi(canvas: HTMLCanvasElement, mazeSize: number): Size {
     canvas.setAttribute('width', String(mazeSize));

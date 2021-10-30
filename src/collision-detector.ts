@@ -1,7 +1,7 @@
 import { CELL_SIZE, PLAYER_SIZE, WALL_WIDTH } from './constants';
-import { mainMazeSchema } from './typings/maze-schemas';
-import { Point } from './typings/point';
-import { WayPoint, wayPoints } from './typings/waypoints-schemas';
+import { mainMazeSchema } from './schemas/maze-schemas';
+import { Point } from './schemas/point';
+import { WayPoint, wayPoints } from './schemas/waypoints-schemas';
 
 export function detectCollision(position: Point): [boolean[], WayPoint|null] {
     const [xIdx, yIdx]: number[] = [Math.ceil((position.x + PLAYER_SIZE / 2) / CELL_SIZE) - 1, Math.ceil((position.y + PLAYER_SIZE / 2) / CELL_SIZE) - 1];

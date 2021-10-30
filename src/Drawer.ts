@@ -1,7 +1,7 @@
 import { CELL_SIZE, WALL_WIDTH, WAYPOINT_SIZE } from './constants';
-import type { MazeSchema } from './typings/maze-schemas';
-import type { Point } from './typings/point';
-import type { WayPoint, WayPointsSchema } from './typings/waypoints-schemas';
+import type { MazeSchema } from './schemas/maze-schemas';
+import type { Point } from './schemas/point';
+import type { WayPoint, WayPointsSchema } from './schemas/waypoints-schemas';
 
 export class Drawer {
     lines: Point[][] = [];
