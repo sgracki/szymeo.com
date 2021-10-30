@@ -1,7 +1,7 @@
-import { CELL_SIZE, PLAYER_SIZE, WALL_WIDTH } from './constants';
+import { CELL_SIZE, WALL_WIDTH, WAYPOINT_SIZE } from './constants';
 import type { MazeSchema } from './typings/maze-schemas';
 import type { Point } from './typings/point';
-import type { WayPointsSchema } from './typings/waypoints-schemas';
+import type { WayPoint, WayPointsSchema } from './typings/waypoints-schemas';
 
 export class Drawer {
     lines: Point[][] = [];
@@ -26,11 +26,15 @@ export class Drawer {
         }
     }
 
-    drawWaypoints(schema: WayPointsSchema): void {
+    drawWaypoints(schema: WayPointsSchema, currentWaypoint?: WayPoint): void {
         for (let i = 0; i < schema.length; i++) {
             const [x, y] = schema[i].coords;
+            let wayPointSize = WAYPOINT_SIZE;
+            if (x === currentWaypoint?.coords[0] && y === currentWaypoint?.coords[1]) {
+                wayPointSize = WAYPOINT_SIZE * 2;
+            }
             const [p1, p2] = [x * CELL_SIZE, y * CELL_SIZE];
-            this.drawPoint(p1 - CELL_SIZE / 2, p2 - CELL_SIZE / 2, PLAYER_SIZE, '#38E8C0');
+            this.drawPoint(p1 - CELL_SIZE / 2, p2 - CELL_SIZE / 2, wayPointSize, '#38E8C0');
         }
     }
 

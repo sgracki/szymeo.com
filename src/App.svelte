@@ -58,7 +58,7 @@
             }
 
             gameDrawer.drawPoint(position.x, position.y, PLAYER_SIZE, '#F45555');
-            gameDrawer.drawWaypoints(wayPoints);
+            gameDrawer.drawWaypoints(wayPoints, collidingWayPoint);
 
             frame = requestAnimationFrame(loop);
         }
